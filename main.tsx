@@ -27,52 +27,70 @@ export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
-		this.addSettingTab(new FormSettingTab(this.app, this));
-
+		// this.addSettingTab(new FormSettingTab(this.app, this));
 		this.registerMarkdownCodeBlockProcessor(
 			"form",
 			async (source: string, el) => {
 				const root = createRoot(el);
 				const PrintInput = () => {
-					const myFunc = eval(source);
 					const match: Array<string> =
-						source.match(/^\s*\(([^\)]*)\)/) || [];
+						source.match(/^\s*\(?([^\)]*)\)?\s*=/) || [];
 					const keys =
 						match.length > 1
 							? match[1].replace(" ", "").split(",")
 							: [];
-
+					if (match.length <= 1) {
+						return (
+							<p style={{ color: "red" }}>
+								Error: an arrow function must be provided with
+								one key. Ex: (x) =&gt; x
+							</p>
+						);
+					}
 					const [val, setVal] = React.useState<{
 						[key: string]: string;
 					}>(keys.reduce((acc, key) => ({ ...acc, [key]: "" }), {}));
 
-					return (
-						<>
-							{keys.map((key) => (
-								<>
-									<span>{key} </span>
-									<input
-										type="text"
-										value={val[key]}
-										onChange={(e) =>
-											setVal({
-												...val,
-												[key]: e.currentTarget.value,
-											})
-										}
-									/>
-									<br />
-								</>
-							))}
-							<p>
-								{myFunc(
-									...Object.values(val).map((v) =>
-										/^\d+$/.test(v) ? parseFloat(v) : v
-									)
-								)}
-							</p>
-						</>
-					);
+					let Res;
+					try {
+						Res = (
+							<>
+								{keys.map((key) => (
+									<>
+										<span>{key} </span>
+										<input
+											type="text"
+											value={val[key]}
+											onChange={(e) =>
+												setVal({
+													...val,
+													[key]: e.currentTarget
+														.value,
+												})
+											}
+										/>
+										<br />
+									</>
+								))}
+								<p>
+									{Object.values(val).some(
+										(v) => `${v}`.length > 0
+									) &&
+										eval(source)(
+											...Object.values(val).map((v) =>
+												/^\d+$/.test(v)
+													? parseFloat(v)
+													: v
+											)
+										)}
+								</p>
+							</>
+						);
+					} catch (e) {
+						Res = <p style={{ color: "red" }}>{e.message}</p>;
+					}
+
+					return Res;
 				};
 				root.render(<PrintInput />);
 			}

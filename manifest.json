@@ -1,10 +1,10 @@
 {
-	"id": "obsidian-form-plugin",
-	"name": "Form Plugin",
-	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "This plugin is for adding forms that can be used to make calculators.",
-	"author": "Jacob Clarke",
-	"authorUrl": "https://jacobaclarke.com",
-	"isDesktopOnly": false
+  "id": "obsidian-forms",
+  "name": "Forms",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "This plugin is for adding forms that can be used to make calculators.",
+  "author": "Jacob Clarke",
+  "authorUrl": "https://jacobaclarke.com",
+  "isDesktopOnly": false
 }
